@@ -183,6 +183,23 @@
         </div>
       </div>
     </div>
+
+    <!-- Graphical Abstract -->
+    <div class="columns is-centered" style="margin-top: 2rem;">
+      <div class="column is-four-fifths has-text-centered">
+        <figure class="image">
+          <img class="result-image" src="./static/images/graphical_abstract.png"
+               alt="Graphical abstract of the paper">
+        </figure>
+        <p class="result-caption" style="margin-top: 0.8rem;">
+          <strong>Graphical Abstract.</strong>
+          The monocular video of a wind-excited plant is processed through TAPIR-based tracking
+          and factor-graph trajectory smoothing, which computes and produces the image-plane
+          relative compliance of the plant stem at various nodes.
+        </p>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -190,6 +207,23 @@
 <section class="section section-gray">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Method</h2>
+
+    <!-- Methodology diagram -->
+    <div class="columns is-centered" style="margin-bottom: 2.5rem;">
+      <div class="column">
+        <figure class="image">
+          <img class="result-image" src="./static/images/methodology.png"
+               alt="Overall methodology diagram">
+        </figure>
+        <p class="result-caption" style="margin-top: 0.8rem;">
+          <strong>Overall Methodology.</strong>
+          Starting from a monocular plant video and annotated initial points, TAPIR generates raw trajectories
+          which are smoothed via factor-graph optimisation. Bending angles are then extracted and fed into
+          the compliance estimation model, whose output is projected onto a 3D point cloud reconstructed
+          by monocular depth estimation.
+        </p>
+      </div>
+    </div>
 
     <div class="content has-text-justified" style="max-width: 800px; margin: 0 auto 2.5rem auto;">
       <p>
@@ -323,26 +357,17 @@
     <!-- 3D point cloud projection -->
     <div class="columns is-centered" style="margin-top: 2rem;">
       <div class="column">
-        <h3 class="title is-5 has-text-centered">RGB Input</h3>
-        <figure class="image">
-          <img class="result-image" src="./static/images/rgb_input.png"
-               alt="RGB input frame">
-        </figure>
-        <p class="result-caption">
-          Monocular RGB frame captured by an Intel RealSense D435i.
-          Only the RGB stream is used — no depth sensor data.
-        </p>
-      </div>
-      <div class="column">
-        <h3 class="title is-5 has-text-centered">3D Compliance Projection</h3>
-        <figure class="image">
-          <img class="result-image" src="./static/images/pointcloud.png"
-               alt="Compliance heatmap projected onto 3D point cloud">
-        </figure>
-        <p class="result-caption">
-          Compliance heatmap projected onto the 3D point cloud recovered by
-          <a href="https://depth-anything-v2.github.io/" target="_blank">DepthAnything V2</a>
-          monocular depth estimation, enabling interpretable spatial visualisation.
+        <h3 class="title is-5 has-text-centered">Interactive 3D Compliance Point Cloud</h3>
+        <div class="pointcloud-container">
+          <iframe src="./static/pointcloud/compliance_pointcloud.html"
+                  title="Interactive 3D compliance point cloud"
+                  allowfullscreen>
+          </iframe>
+        </div>
+        <p class="result-caption" style="margin-top: 0.8rem;">
+          Interactive 3D point cloud (drag to rotate, scroll to zoom) with the compliance heatmap
+          projected using <a href="https://depth-anything-v2.github.io/" target="_blank">DepthAnything V2</a>
+          monocular depth estimation. <strong>Blue = stiff, Red = compliant.</strong>
         </p>
       </div>
     </div>
