@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uncertainty-Aware Relative Compliance Estimation of Wind-Excited Plant from Monocular Video</title>
+  <meta name="description" content="We estimate per-branch relative compliance and uncertainty from monocular video of a wind-excited plant using TAPIR tracking, factor-graph smoothing, and alternating least squares — no force sensors required.">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Academicons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Custom JS -->
+  <script defer src="./static/js/index.js"></script>
+</head>
+<body>
+
+<!-- ─── Navbar ─────────────────────────────────────────────────────────────── -->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://abhimanyubhowmik.github.io">
+        <span class="icon"><i class="fas fa-home"></i></span>
+        <span>Home</span>
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">More Research</a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://abhimanyubhowmik.github.io/uam.github.io/">
+            Uncertainty-Aware Mapping for Underwater Robots
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── Hero: Title, Authors, Links ───────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <h1 class="title is-1 publication-title">
+            Uncertainty-Aware Relative Compliance Estimation<br>
+            of Wind-Excited Plant from Monocular Video
+          </h1>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://abhimanyubhowmik.github.io">Abhimanyu Bhowmik</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              Jan Behrens<sup>1</sup>,
+            </span>
+            <span class="author-block">
+              Robert Babu&#353;ka<sup>1,2</sup>
+            </span>
+          </div>
+
+          <div class="is-size-6 publication-authors" style="margin-top: 6px; color: #444;">
+            <span class="author-block">
+              <sup>1</sup>Czech Institute of Informatics, Robotics and Cybernetics, CTU in Prague
+            </span>
+            &nbsp;&nbsp;
+            <span class="author-block">
+              <sup>2</sup>Delft University of Technology
+            </span>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <span class="venue-tag">ICRA 2026 Workshop</span>
+          </div>
+
+          <div class="column has-text-centered" style="margin-top: 20px;">
+            <div class="publication-links">
+
+              <!-- Paper PDF -->
+              <span class="link-block">
+                <a href="./static/paper/ICRA26_Workshop.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+
+              <!-- arXiv (placeholder — update when available) -->
+              <!--
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/XXXX.XXXXX"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              -->
+
+              <!-- Code -->
+              <span class="link-block">
+                <a href="https://github.com/abhimanyubhowmik"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+
+            </div>
+          </div><!-- /publication-links col -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Teaser Video ───────────────────────────────────────────────────────── -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline width="100%"
+             style="border-radius: 10px;">
+        <source src="./static/videos/teaser.mp4" type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered" style="margin-top: 1.2rem;">
+        Factor-graph smoothed branch trajectories overlaid on a wind-excited plant,
+        with per-edge relative compliance estimated directly from monocular video — no force sensors required.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Abstract ──────────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Quantifying the mechanical properties of plant branches before manipulation can be valuable for
+            automated and selective harvesting of fruits and vegetables. This is fundamentally challenging because
+            estimation of properties such as absolute stiffness requires known force measurements, which are
+            unreliable, expensive, and time-consuming to collect at scale. We identified artificial wind
+            excitation as an acceptable proxy, a <em>relative projected compliance</em> &kappa;<sub>e</sub>
+            that measures how much each branch segment bends compared to others under shared excitation,
+            without requiring force measurements.
+          </p>
+          <p>
+            Our pipeline combines initial point tracking using
+            <a href="https://deepmind-tapir.github.io/" target="_blank">TAPIR</a>,
+            a factor-graph-style trajectory smoother, and a separable low-rank compliance model fitted by
+            alternating least squares. We measure the stability of the fitted &kappa;<sub>e</sub>, providing a
+            relative uncertainty proxy for the estimates. Using a monocular video of a wind-excited plant branch
+            with <strong>20 annotated nodes, 19 edges, and 1104 frames</strong>, we demonstrate our proof of
+            concept. Our pipeline recovers a physically plausible proximal-to-distal relative motion gradient
+            and an interpretable relative compliance map with <strong>95% confidence intervals</strong>.
+            These results demonstrate that compliance maps with corresponding uncertainty are recoverable from
+            monocular video without ground-truth force data, enabling new possibilities for agricultural
+            robotic branch manipulation planning.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Method ────────────────────────────────────────────────────────────── -->
+<section class="section section-gray">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Method</h2>
+
+    <div class="content has-text-justified" style="max-width: 800px; margin: 0 auto 2.5rem auto;">
+      <p>
+        Our three-stage pipeline processes monocular RGB video of a wind-excited plant branch to produce
+        a per-edge relative compliance map with uncertainty estimates:
+      </p>
+      <div class="method-step">
+        <strong>Stage 1 — TAPIR Point Tracking.</strong>
+        Manually annotated anchor points on the branch are tracked across all 1104 frames using TAPIR,
+        producing raw 2D trajectories that capture branch motion but contain pixel-noise jitter.
+      </div>
+      <div class="method-step">
+        <strong>Stage 2 — Factor-Graph Trajectory Smoother.</strong>
+        A factor-graph optimisation enforces temporal smoothness (velocity and acceleration priors)
+        and branch inextensibility, reducing geometric noise by ~39% while preserving the bending signal.
+      </div>
+      <div class="method-step">
+        <strong>Stage 3 — Relative Compliance Estimation.</strong>
+        Bending angles &Delta;&beta;<sub>e,t</sub> are extracted per edge, and a separable rank-1 observation
+        model y<sub>e,t</sub> &asymp; &kappa;<sub>e</sub> z<sub>t</sub> is fitted via alternating least squares
+        with log-normal shrinkage regularisation. A moving-block bootstrap yields 95% CIs for each edge.
+      </div>
+    </div>
+
+    <!-- Tracking vs Smoothing side-by-side -->
+    <div class="columns is-centered is-vcentered">
+      <div class="column">
+        <h3 class="title is-5 has-text-centered">Stage 1: TAPIR Point Tracking</h3>
+        <video class="full-width-video" autoplay muted loop playsinline controls>
+          <source src="./static/videos/tapir_tracking.mp4" type="video/mp4">
+        </video>
+        <p class="result-caption">
+          Raw TAPIR trajectories on the 20-node branch graph. Tracks are noisy due to pixel noise
+          and brief occlusions.
+        </p>
+      </div>
+      <div class="column">
+        <h3 class="title is-5 has-text-centered">Stage 2: Factor-Graph Smoothed Trajectories</h3>
+        <video class="full-width-video" autoplay muted loop playsinline controls>
+          <source src="./static/videos/annotated_nodes.mp4" type="video/mp4">
+        </video>
+        <p class="result-caption">
+          Smoothed trajectories after factor-graph optimisation. The branch graph preserves
+          inextensibility while suppressing jitter.
+        </p>
+      </div>
+    </div>
+
+    <!-- Smoothing comparison plot -->
+    <div class="columns is-centered" style="margin-top: 2rem;">
+      <div class="column is-four-fifths">
+        <figure class="image">
+          <img class="result-image" src="./static/images/smoothing_comparison.png"
+               alt="Effect of factor-graph smoothing on bending angle RMS and edge-length CV">
+        </figure>
+        <p class="result-caption">
+          <strong>Effect of factor-graph smoothing.</strong>
+          Left: bending angle RMS across the branch. Right: edge-length coefficient of variation.
+          Smoothed tracks (blue) achieve ~39% lower noise than raw TAPIR (orange) while preserving
+          the bending motion signal.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Results ───────────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Results</h2>
+
+    <!-- Compliance + Uncertainty overlays -->
+    <div class="columns is-centered" style="margin-top: 1.5rem;">
+      <div class="column">
+        <h3 class="title is-5 has-text-centered">Relative Compliance Map</h3>
+        <figure class="image">
+          <img class="result-image" src="./static/images/compliance_overlay.png"
+               alt="Relative compliance heatmap overlaid on plant image">
+        </figure>
+        <p class="result-caption">
+          &kappa;<sub>e</sub> projected onto the first video frame.
+          <strong>Blue = stiff</strong>, <strong>Red = compliant</strong>.
+          The 3–4 bends in the upper stem show the highest compliance.
+        </p>
+      </div>
+      <div class="column">
+        <h3 class="title is-5 has-text-centered">Uncertainty Map</h3>
+        <figure class="image">
+          <img class="result-image" src="./static/images/uncertainty_overlay.png"
+               alt="Bootstrap uncertainty overlay on plant image">
+        </figure>
+        <p class="result-caption">
+          Bootstrap uncertainty U<sub>e</sub> = (CI<sub>hi</sub> &minus; CI<sub>lo</sub>) / &kappa;<sub>e</sub>
+          per edge. <strong>Green = confident</strong>, <strong>Red = uncertain</strong>.
+          Median U<sub>e</sub> = 0.29 (29%), indicating well-constrained estimates for most edges.
+        </p>
+      </div>
+    </div>
+
+    <!-- Per-edge compliance and zone summary -->
+    <div class="columns is-centered" style="margin-top: 2rem;">
+      <div class="column">
+        <h3 class="title is-5 has-text-centered">Per-Edge Compliance vs. Root Distance</h3>
+        <figure class="image">
+          <img class="result-image" src="./static/images/root_distance_vs_compliance.png"
+               alt="Per-edge compliance as function of root distance with 95% CI">
+        </figure>
+        <p class="result-caption">
+          &kappa;<sub>e</sub> per edge as a function of root distance; error bars are 95% bootstrap CIs.
+          Colours indicate anatomical zone:
+          <strong style="color:#2196F3;">proximal</strong> (edges 0–5),
+          <strong style="color:#4CAF50;">mid</strong> (6–12),
+          <strong style="color:#F44336;">distal</strong> (13–19).
+          The non-monotonic profile shows that compliance is not merely motion amplitude.
+        </p>
+      </div>
+      <div class="column">
+        <h3 class="title is-5 has-text-centered">Zone Summary</h3>
+        <figure class="image">
+          <img class="result-image" src="./static/images/zone_summary.png"
+               alt="Compliance summary per anatomical zone">
+        </figure>
+        <p class="result-caption">
+          Compliance distribution across proximal, mid, and distal anatomical zones.
+          Distal edges tend to be more compliant; mid and proximal zones contain both
+          stiff and compliant sections corresponding to bends and straight segments.
+        </p>
+      </div>
+    </div>
+
+    <!-- 3D point cloud projection -->
+    <div class="columns is-centered" style="margin-top: 2rem;">
+      <div class="column">
+        <h3 class="title is-5 has-text-centered">RGB Input</h3>
+        <figure class="image">
+          <img class="result-image" src="./static/images/rgb_input.png"
+               alt="RGB input frame">
+        </figure>
+        <p class="result-caption">
+          Monocular RGB frame captured by an Intel RealSense D435i.
+          Only the RGB stream is used — no depth sensor data.
+        </p>
+      </div>
+      <div class="column">
+        <h3 class="title is-5 has-text-centered">3D Compliance Projection</h3>
+        <figure class="image">
+          <img class="result-image" src="./static/images/pointcloud.png"
+               alt="Compliance heatmap projected onto 3D point cloud">
+        </figure>
+        <p class="result-caption">
+          Compliance heatmap projected onto the 3D point cloud recovered by
+          <a href="https://depth-anything-v2.github.io/" target="_blank">DepthAnything V2</a>
+          monocular depth estimation, enabling interpretable spatial visualisation.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Related Links ─────────────────────────────────────────────────────── -->
+<section class="section section-gray">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Related Links</h2>
+    <div class="content has-text-centered" style="font-size: 1.05rem;">
+      <p>
+        Point tracking is powered by
+        <a href="https://deepmind-tapir.github.io/" target="_blank"><strong>TAPIR</strong></a>
+        (Tracking Any Point with per-frame Initialization and temporal Refinement).
+      </p>
+      <p>
+        Monocular depth estimation uses
+        <a href="https://depth-anything-v2.github.io/" target="_blank"><strong>DepthAnything V2</strong></a>
+        for 3D point cloud reconstruction.
+      </p>
+      <p>
+        Factor-graph optimisation is inspired by
+        <a href="https://arxiv.org/abs/2011.06194" target="_blank"><strong>GTSAM / factor-graph approaches</strong></a>
+        for dynamics-constrained optimisation.
+      </p>
+      <p>
+        Uncertainty estimation uses the
+        <strong>moving-block bootstrap</strong> to handle temporally correlated bending signals.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BibTeX ────────────────────────────────────────────────────────────── -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{bhowmik2026uncertainty,
+  title     = {Uncertainty-Aware Relative Compliance Estimation of Wind-Excited Plant from Monocular Video},
+  author    = {Bhowmik, Abhimanyu and Behrens, Jan and Babu{\v{s}}ka, Robert},
+  booktitle = {ICRA 2026 Workshop on Agricultural Robotics},
+  year      = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<!-- ─── Footer ────────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link" href="./static/paper/ICRA26_Workshop.pdf">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link icon-link-gap" href="https://github.com/abhimanyubhowmik">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This work was supported by <strong>ROBOPROX</strong> and the
+            <strong>Czech Technical University in Prague</strong>.
+          </p>
+          <p>
+            Website template adapted from
+            <a href="https://nerfies.github.io/" target="_blank">Nerfies</a>, licensed under
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+              CC BY-SA 4.0
+            </a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
