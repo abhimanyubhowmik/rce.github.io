@@ -27,6 +27,63 @@
 
   <!-- Custom JS -->
   <script defer src="./static/js/index.js"></script>
+
+  <style>
+    .plant-tab-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .plant-tab-buttons .button.is-active {
+      background-color: #363636;
+      color: #fff;
+      border-color: #363636;
+    }
+    .plant-panel { display: none; }
+    .plant-panel.is-active { display: block; }
+    .figure-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 768px) {
+      .figure-grid { grid-template-columns: 1fr; }
+    }
+    .figure-item { text-align: center; }
+    .figure-item img { width: 100%; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+    .figure-item .result-caption { margin-top: 0.5rem; font-size: 0.88rem; }
+    .hero-video-container {
+      position: relative;
+      width: 100%;
+      margin: 0 auto 1rem auto;
+    }
+    .hero-video-container video {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    }
+    .plant-section-header {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf0 100%);
+      border-left: 4px solid #363636;
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0 6px 6px 0;
+    }
+    .overlay-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 900px) {
+      .overlay-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .overlay-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
@@ -107,16 +164,14 @@
                 </a>
               </span>
 
-              <!-- arXiv (placeholder — update when available) -->
-              <!--
+              <!-- Supplementary Material -->
               <span class="link-block">
-                <a href="https://arxiv.org/abs/XXXX.XXXXX"
+                <a href="./static/paper/Supplimentary.pdf"
                    class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><i class="ai ai-arxiv"></i></span>
-                  <span>arXiv</span>
+                  <span class="icon"><i class="fas fa-file-alt"></i></span>
+                  <span>Supplementary</span>
                 </a>
               </span>
-              -->
 
               <!-- Code -->
               <span class="link-block">
@@ -132,6 +187,22 @@
 
         </div>
       </div>
+
+      <!-- Hero Video -->
+      <div class="columns is-centered" style="margin-top: 1.5rem;">
+        <div class="column is-four-fifths">
+          <div class="hero-video-container">
+            <video autoplay muted loop playsinline>
+              <source src="./static/videos/hero_compliance.mp4" type="video/mp4">
+            </video>
+          </div>
+          <p class="result-caption has-text-centered" style="margin-top: 0.6rem;">
+            Compliance heatmap overlaid on a wind-excited plant branch in real time.
+            <strong>Blue = stiff</strong>, <strong>Red = compliant</strong>.
+          </p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -157,9 +228,9 @@
             <a href="https://deepmind-tapir.github.io/" target="_blank">TAPIR</a>,
             a factor-graph-style trajectory smoother, and a separable low-rank compliance model fitted by
             alternating least squares. We measure the stability of the fitted &kappa;<sub>e</sub>, providing a
-            relative uncertainty proxy for the estimates. Using a monocular video of a wind-excited plant branch
-            with <strong>20 annotated nodes, 19 edges, and 1104 frames</strong>, we demonstrate our proof of
-            concept. Our pipeline recovers a physically plausible proximal-to-distal relative motion gradient
+            relative uncertainty proxy for the estimates. Using monocular video of two wind-excited plants with
+            annotated nodes and edges across hundreds of frames, we demonstrate our proof of concept.
+            Our pipeline recovers a physically plausible proximal-to-distal relative motion gradient
             and an interpretable relative compliance map with <strong>95% confidence intervals</strong>.
             These results demonstrate that compliance maps with corresponding uncertainty are recoverable from
             monocular video without ground-truth force data, enabling new possibilities for agricultural
@@ -217,7 +288,7 @@
       </p>
       <div class="method-step">
         <strong>Stage 1 — TAPIR Point Tracking.</strong>
-        Manually annotated anchor points on the branch are tracked across all 1104 frames using TAPIR,
+        Manually annotated anchor points on the branch are tracked across all frames using TAPIR,
         producing raw 2D trajectories that capture branch motion but contain pixel-noise jitter.
       </div>
       <div class="method-step">
@@ -233,45 +304,6 @@
       </div>
     </div>
 
-    <!-- Before / After factor-graph smoothing side-by-side -->
-    <div class="columns is-centered is-vcentered">
-      <div class="column">
-        <h3 class="title is-5 has-text-centered">Before Factor-Graph Smoothing</h3>
-        <video class="full-width-video" autoplay muted loop playsinline controls>
-          <source src="./static/videos/annotated_nodes.mp4" type="video/mp4">
-        </video>
-        <p class="result-caption">
-          Annotated branch graph with raw TAPIR trajectories. Tracks are noisy due to pixel noise
-          and brief occlusions between frames.
-        </p>
-      </div>
-      <div class="column">
-        <h3 class="title is-5 has-text-centered">After Factor-Graph Smoothing</h3>
-        <video class="full-width-video" autoplay muted loop playsinline controls>
-          <source src="./static/videos/teaser.mp4" type="video/mp4">
-        </video>
-        <p class="result-caption">
-          Same graph after factor-graph optimisation. Temporal smoothness and branch inextensibility
-          are enforced, reducing geometric noise by ~39%.
-        </p>
-      </div>
-    </div>
-
-    <!-- Smoothing comparison plot -->
-    <div class="columns is-centered" style="margin-top: 2rem;">
-      <div class="column is-four-fifths">
-        <figure class="image">
-          <img class="result-image" src="./static/images/smoothing_comparison.png"
-               alt="Effect of factor-graph smoothing on bending angle RMS and edge-length CV">
-        </figure>
-        <p class="result-caption">
-          <strong>Effect of factor-graph smoothing.</strong>
-          Left: bending angle RMS across the branch. Right: edge-length coefficient of variation.
-          Smoothed tracks (blue) achieve ~39% lower noise than raw TAPIR (orange) while preserving
-          the bending motion signal.
-        </p>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -279,83 +311,310 @@
 <section class="section">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Results</h2>
+    <p class="has-text-centered" style="margin-bottom: 2rem; color: #555;">
+      We validated our pipeline on two separate wind-excited plants. Select a plant below to explore the analysis.
+    </p>
 
-    <!-- Compliance + Uncertainty overlays -->
-    <div class="columns is-centered" style="margin-top: 1.5rem;">
-      <div class="column">
-        <h3 class="title is-5 has-text-centered">Relative Compliance Map</h3>
-        <figure class="image">
-          <img class="result-image" src="./static/images/compliance_overlay.png"
-               alt="Relative compliance heatmap overlaid on plant image">
-        </figure>
-        <p class="result-caption">
-          &kappa;<sub>e</sub> projected onto the first video frame.
-          <strong>Blue = stiff</strong>, <strong>Red = compliant</strong>.
-          The 3–4 bends in the upper stem show the highest compliance.
-        </p>
-      </div>
-      <div class="column">
-        <h3 class="title is-5 has-text-centered">Uncertainty Map</h3>
-        <figure class="image">
-          <img class="result-image" src="./static/images/uncertainty_overlay.png"
-               alt="Bootstrap uncertainty overlay on plant image">
-        </figure>
-        <p class="result-caption">
-          Bootstrap uncertainty U<sub>e</sub> = (CI<sub>hi</sub> &minus; CI<sub>lo</sub>) / &kappa;<sub>e</sub>
-          per edge. <strong>Green = confident</strong>, <strong>Red = uncertain</strong>.
-          Median U<sub>e</sub> = 0.29 (29%), indicating well-constrained estimates for most edges.
-        </p>
-      </div>
+    <!-- Plant tabs -->
+    <div class="plant-tab-buttons">
+      <button class="button is-medium is-rounded is-active" id="btn-plant1" onclick="showPlant('plant1')">
+        <span class="icon"><i class="fas fa-seedling"></i></span>
+        <span>Plant 1</span>
+      </button>
+      <button class="button is-medium is-rounded" id="btn-plant2" onclick="showPlant('plant2')">
+        <span class="icon"><i class="fas fa-leaf"></i></span>
+        <span>Plant 2</span>
+      </button>
     </div>
 
-    <!-- Per-edge compliance and zone summary -->
-    <div class="columns is-centered" style="margin-top: 2rem;">
-      <div class="column">
-        <h3 class="title is-5 has-text-centered">Per-Edge Compliance vs. Root Distance</h3>
-        <figure class="image">
-          <img class="result-image" src="./static/images/root_distance_vs_compliance.png"
-               alt="Per-edge compliance as function of root distance with 95% CI">
-        </figure>
-        <p class="result-caption">
-          &kappa;<sub>e</sub> per edge as a function of root distance; error bars are 95% bootstrap CIs.
-          Colours indicate anatomical zone:
-          <strong style="color:#2196F3;">proximal</strong> (edges 0–5),
-          <strong style="color:#4CAF50;">mid</strong> (6–12),
-          <strong style="color:#F44336;">distal</strong> (13–19).
-          The non-monotonic profile shows that compliance is not merely motion amplitude.
-        </p>
-      </div>
-      <div class="column">
-        <h3 class="title is-5 has-text-centered">Zone Summary</h3>
-        <figure class="image">
-          <img class="result-image" src="./static/images/zone_summary.png"
-               alt="Compliance summary per anatomical zone">
-        </figure>
-        <p class="result-caption">
-          Compliance distribution across proximal, mid, and distal anatomical zones.
-          Distal edges tend to be more compliant; mid and proximal zones contain both
-          stiff and compliant sections corresponding to bends and straight segments.
-        </p>
-      </div>
-    </div>
+    <!-- ════════════════ PLANT 1 ════════════════ -->
+    <div id="panel-plant1" class="plant-panel is-active">
 
-    <!-- 3D point cloud projection -->
-    <div class="columns is-centered" style="margin-top: 2rem;">
-      <div class="column">
-        <h3 class="title is-5 has-text-centered">Interactive 3D Compliance Point Cloud</h3>
-        <div class="pointcloud-container">
-          <iframe src="./static/pointcloud/compliance_pointcloud.html"
-                  title="Interactive 3D compliance point cloud"
-                  allowfullscreen>
-          </iframe>
+      <div class="plant-section-header">
+        <h3 class="title is-4" style="margin-bottom:0;">Plant 1 — Analysis</h3>
+        <p style="margin:0; color:#555; font-size:0.95rem;">20 nodes · 19 edges · 1104 frames</p>
+      </div>
+
+      <!-- Before / After smoothing videos -->
+      <h3 class="title is-5 has-text-centered" style="margin-top:1.5rem;">Factor-Graph Smoothing</h3>
+      <div class="columns is-centered is-vcentered">
+        <div class="column">
+          <h4 class="title is-6 has-text-centered">Before Smoothing</h4>
+          <video class="full-width-video" autoplay muted loop playsinline controls>
+            <source src="./static/videos/plant_1/annotated_nodes.mp4" type="video/mp4">
+          </video>
+          <p class="result-caption">
+            Annotated branch graph with raw TAPIR trajectories. Tracks are noisy due to pixel noise
+            and brief occlusions between frames.
+          </p>
         </div>
-        <p class="result-caption" style="margin-top: 0.8rem;">
-          Interactive 3D point cloud (drag to rotate, scroll to zoom) with the compliance heatmap
-          projected using <a href="https://depth-anything-v2.github.io/" target="_blank">DepthAnything V2</a>
-          monocular depth estimation. <strong>Blue = stiff, Red = compliant.</strong>
-        </p>
+        <div class="column">
+          <h4 class="title is-6 has-text-centered">After Smoothing</h4>
+          <video class="full-width-video" autoplay muted loop playsinline controls>
+            <source src="./static/videos/plant_1/annotated_nodes_factor_graph_smoothed.mp4" type="video/mp4">
+          </video>
+          <p class="result-caption">
+            Same graph after factor-graph optimisation. Temporal smoothness and branch inextensibility
+            are enforced, reducing geometric noise by ~39%.
+          </p>
+        </div>
       </div>
-    </div>
+
+      <!-- Fig 4: Smoothing comparison -->
+      <div class="columns is-centered" style="margin-top:2rem;">
+        <div class="column is-four-fifths">
+          <figure class="image">
+            <img class="result-image" src="./static/figures/plant_1/fig4_smoothing.png"
+                 alt="Effect of factor-graph smoothing — Plant 1">
+          </figure>
+          <p class="result-caption">
+            <strong>Fig. 4 — Smoothing Comparison.</strong>
+            Bending angle RMS (left) and edge-length coefficient of variation (right) for raw TAPIR (orange)
+            vs. factor-graph smoothed (blue) tracks. Smoothed tracks show ~39% lower noise
+            while preserving the bending motion signal.
+          </p>
+        </div>
+      </div>
+
+      <!-- Fig 5: Node motion -->
+      <div class="columns is-centered" style="margin-top:2rem;">
+        <div class="column is-four-fifths">
+          <figure class="image">
+            <img class="result-image" src="./static/figures/plant_1/fig5_motion.png"
+                 alt="Node motion vs root distance — Plant 1">
+          </figure>
+          <p class="result-caption">
+            <strong>Fig. 5 — Node Motion vs. Root Distance.</strong>
+            Per-node displacement amplitude as a function of distance from the root.
+            A clear proximal-to-distal motion gradient confirms physically plausible
+            wind-excited dynamics.
+          </p>
+        </div>
+      </div>
+
+      <!-- Compliance + Uncertainty overlays -->
+      <h3 class="title is-5 has-text-centered" style="margin-top:2.5rem;">Compliance Overlay Images</h3>
+      <div class="overlay-grid">
+        <div class="figure-item">
+          <img src="./static/images/plant_1/compliance_overlay.png"
+               alt="Relative compliance overlay — Plant 1">
+          <p class="result-caption">
+            <strong>Relative Compliance &kappa;<sub>e</sub>.</strong>
+            <strong>Blue = stiff</strong>, <strong>Red = compliant</strong>.
+          </p>
+        </div>
+        <div class="figure-item">
+          <img src="./static/images/plant_1/uncertainty_overlay.png"
+               alt="Uncertainty overlay — Plant 1">
+          <p class="result-caption">
+            <strong>Bootstrap Uncertainty U<sub>e</sub>.</strong>
+            <strong>Green = confident</strong>, <strong>Red = uncertain</strong>.
+          </p>
+        </div>
+        <div class="figure-item">
+          <img src="./static/images/plant_1/per_edge_length_overlay.png"
+               alt="Per-edge-length compliance overlay — Plant 1">
+          <p class="result-caption">
+            <strong>Compliance per Edge Length.</strong>
+            Normalised by segment length to remove geometric bias.
+          </p>
+        </div>
+      </div>
+
+      <!-- Fig 6: Compliance -->
+      <div class="columns is-centered" style="margin-top:2rem;">
+        <div class="column is-four-fifths">
+          <figure class="image">
+            <img class="result-image" src="./static/figures/plant_1/fig6_compliance.png"
+                 alt="Per-edge compliance vs root distance — Plant 1">
+          </figure>
+          <p class="result-caption">
+            <strong>Fig. 6 — Per-Edge Compliance vs. Root Distance.</strong>
+            &kappa;<sub>e</sub> per edge with 95% bootstrap confidence intervals.
+            Colours indicate anatomical zone:
+            <strong style="color:#2196F3;">proximal</strong>,
+            <strong style="color:#4CAF50;">mid</strong>,
+            <strong style="color:#F44336;">distal</strong>.
+            The non-monotonic profile shows compliance is not merely motion amplitude.
+          </p>
+        </div>
+      </div>
+
+      <!-- Fig 7: Excitation + Zone summary side by side -->
+      <div class="figure-grid" style="margin-top:2rem;">
+        <div class="figure-item">
+          <img src="./static/figures/plant_1/fig7_excitation.png"
+               alt="Excitation timeseries — Plant 1">
+          <p class="result-caption">
+            <strong>Fig. 7 — Excitation Timeseries.</strong>
+            Estimated shared excitation z<sub>t</sub> over time, showing the
+            wind-driven oscillation used to fit the compliance model.
+          </p>
+        </div>
+        <div class="figure-item">
+          <img src="./static/figures/plant_1/figS_zones.png"
+               alt="Zone summary — Plant 1">
+          <p class="result-caption">
+            <strong>Fig. S — Zone Summary.</strong>
+            Compliance distribution across proximal, mid, and distal anatomical zones.
+            Distal edges tend to be more compliant.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3D point cloud -->
+      <div class="columns is-centered" style="margin-top:2.5rem;">
+        <div class="column">
+          <h3 class="title is-5 has-text-centered">Interactive 3D Compliance Point Cloud</h3>
+          <div class="pointcloud-container">
+            <iframe src="./static/pointcloud/compliance_pointcloud.html"
+                    title="Interactive 3D compliance point cloud — Plant 1"
+                    allowfullscreen>
+            </iframe>
+          </div>
+          <p class="result-caption" style="margin-top: 0.8rem;">
+            Interactive 3D point cloud (drag to rotate, scroll to zoom) with the compliance heatmap
+            projected using <a href="https://depth-anything-v2.github.io/" target="_blank">DepthAnything V2</a>
+            monocular depth estimation. <strong>Blue = stiff, Red = compliant.</strong>
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /panel-plant1 -->
+
+    <!-- ════════════════ PLANT 2 ════════════════ -->
+    <div id="panel-plant2" class="plant-panel">
+
+      <div class="plant-section-header">
+        <h3 class="title is-4" style="margin-bottom:0;">Plant 2 — Analysis</h3>
+        <p style="margin:0; color:#555; font-size:0.95rem;">Second plant subject — independent validation of the pipeline</p>
+      </div>
+
+      <!-- Before / After smoothing videos -->
+      <h3 class="title is-5 has-text-centered" style="margin-top:1.5rem;">Factor-Graph Smoothing</h3>
+      <div class="columns is-centered is-vcentered">
+        <div class="column">
+          <h4 class="title is-6 has-text-centered">Before Smoothing</h4>
+          <video class="full-width-video" autoplay muted loop playsinline controls>
+            <source src="./static/videos/plant_2/annotated_nodes.mp4" type="video/mp4">
+          </video>
+          <p class="result-caption">
+            Raw TAPIR trajectories on Plant 2. Similar noise characteristics
+            to Plant 1 — pixel jitter and brief occlusions visible.
+          </p>
+        </div>
+        <div class="column">
+          <h4 class="title is-6 has-text-centered">After Smoothing</h4>
+          <video class="full-width-video" autoplay muted loop playsinline controls>
+            <source src="./static/videos/plant_2/annotated_nodes_factor_graph_smoothed.mp4" type="video/mp4">
+          </video>
+          <p class="result-caption">
+            After factor-graph optimisation on Plant 2. The smoother generalises
+            to the new plant topology without re-tuning.
+          </p>
+        </div>
+      </div>
+
+      <!-- Fig 4: Smoothing comparison -->
+      <div class="columns is-centered" style="margin-top:2rem;">
+        <div class="column is-four-fifths">
+          <figure class="image">
+            <img class="result-image" src="./static/figures/plant_2/fig4_smoothing.png"
+                 alt="Effect of factor-graph smoothing — Plant 2">
+          </figure>
+          <p class="result-caption">
+            <strong>Fig. 4 — Smoothing Comparison (Plant 2).</strong>
+            Factor-graph smoothing again reduces bending angle RMS and edge-length CV
+            compared to raw TAPIR, confirming the smoother generalises across plant topologies.
+          </p>
+        </div>
+      </div>
+
+      <!-- Fig 5: Node motion -->
+      <div class="columns is-centered" style="margin-top:2rem;">
+        <div class="column is-four-fifths">
+          <figure class="image">
+            <img class="result-image" src="./static/figures/plant_2/fig5_motion.png"
+                 alt="Node motion vs root distance — Plant 2">
+          </figure>
+          <p class="result-caption">
+            <strong>Fig. 5 — Node Motion vs. Root Distance (Plant 2).</strong>
+            The proximal-to-distal motion gradient is recovered for Plant 2 as well,
+            validating the pipeline's ability to generalise to different plant geometries.
+          </p>
+        </div>
+      </div>
+
+      <!-- Compliance + Uncertainty overlays -->
+      <h3 class="title is-5 has-text-centered" style="margin-top:2.5rem;">Compliance Overlay Images</h3>
+      <div class="overlay-grid">
+        <div class="figure-item">
+          <img src="./static/images/plant_2/compliance_overlay.png"
+               alt="Relative compliance overlay — Plant 2">
+          <p class="result-caption">
+            <strong>Relative Compliance &kappa;<sub>e</sub>.</strong>
+            <strong>Blue = stiff</strong>, <strong>Red = compliant</strong>.
+          </p>
+        </div>
+        <div class="figure-item">
+          <img src="./static/images/plant_2/uncertainty_overlay.png"
+               alt="Uncertainty overlay — Plant 2">
+          <p class="result-caption">
+            <strong>Bootstrap Uncertainty U<sub>e</sub>.</strong>
+            <strong>Green = confident</strong>, <strong>Red = uncertain</strong>.
+          </p>
+        </div>
+        <div class="figure-item">
+          <img src="./static/images/plant_2/per_edge_length_overlay.png"
+               alt="Per-edge-length compliance overlay — Plant 2">
+          <p class="result-caption">
+            <strong>Compliance per Edge Length.</strong>
+            Normalised by segment length to remove geometric bias.
+          </p>
+        </div>
+      </div>
+
+      <!-- Fig 6: Compliance -->
+      <div class="columns is-centered" style="margin-top:2rem;">
+        <div class="column is-four-fifths">
+          <figure class="image">
+            <img class="result-image" src="./static/figures/plant_2/fig6_compliance.png"
+                 alt="Per-edge compliance vs root distance — Plant 2">
+          </figure>
+          <p class="result-caption">
+            <strong>Fig. 6 — Per-Edge Compliance vs. Root Distance (Plant 2).</strong>
+            &kappa;<sub>e</sub> per edge with 95% bootstrap confidence intervals.
+            Plant 2 shows a distinct compliance profile, demonstrating that the pipeline
+            captures plant-specific mechanical characteristics.
+          </p>
+        </div>
+      </div>
+
+      <!-- Fig 7: Excitation + Zone summary side by side -->
+      <div class="figure-grid" style="margin-top:2rem;">
+        <div class="figure-item">
+          <img src="./static/figures/plant_2/fig7_excitation.png"
+               alt="Excitation timeseries — Plant 2">
+          <p class="result-caption">
+            <strong>Fig. 7 — Excitation Timeseries (Plant 2).</strong>
+            Estimated shared excitation z<sub>t</sub> for Plant 2.
+            The wind-driven oscillation pattern differs from Plant 1,
+            reflecting different experimental conditions.
+          </p>
+        </div>
+        <div class="figure-item">
+          <img src="./static/figures/plant_2/figS_zones.png"
+               alt="Zone summary — Plant 2">
+          <p class="result-caption">
+            <strong>Fig. S — Zone Summary (Plant 2).</strong>
+            Compliance distribution across anatomical zones for Plant 2.
+            Cross-plant comparison reveals consistent proximal-stiff / distal-compliant trends.
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /panel-plant2 -->
+
   </div>
 </section>
 
@@ -431,6 +690,16 @@
     </div>
   </div>
 </footer>
+
+<!-- Plant tab switching script -->
+<script>
+function showPlant(plant) {
+  document.querySelectorAll('.plant-panel').forEach(p => p.classList.remove('is-active'));
+  document.querySelectorAll('.plant-tab-buttons .button').forEach(b => b.classList.remove('is-active'));
+  document.getElementById('panel-' + plant).classList.add('is-active');
+  document.getElementById('btn-' + plant).classList.add('is-active');
+}
+</script>
 
 </body>
 </html>
